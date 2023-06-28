@@ -38,8 +38,8 @@ string getEncoded(string &text, vector<string>&code) {
 	return coded;
 }
 
-void buildTree(string text) {
-	if (text.empty()) return;
+string buildTree(string text) {
+	if (text.empty()) return "";
 
 	vector<int> freq(128);
 	for (auto &ch : text) {
@@ -87,12 +87,32 @@ void buildTree(string text) {
 		}
 	}
 
-	cout << "Encoded String: " << coded << endl;
-	cout << "Decoded String: " << decoded << endl;
+	return coded;
 }
 
-int main() {
-	buildTree("We already know that every character.");
+int main(int argc, char *argv[]) {
+	ifstream inputFile;
+	inputFile.open((string)argv[1] + ".txt");
+
+	ofstream outputFile;
+	outputFile.open((string)argv[2] + ".txt");
+
+	if (inputFile.is_open() && outputFile.is_open()) {
+		string text = "";
+		string line;
+		while (getline(inputFile, line)) {
+			text += line;
+			text += "\n";
+		}
+
+		inputFile.close();
+		outputFile << buildTree(text);
+		outputFile.close();
+	}
+
+	else {
+		cout << "Error! Something went wrong.";
+	}
 
 	return 0;
 }
