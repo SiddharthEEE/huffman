@@ -94,20 +94,29 @@ int main(int argc, char *argv[]) {
 	ifstream inputFile;
 	inputFile.open((string)argv[1] + ".txt");
 
-	ofstream outputFile;
-	outputFile.open((string)argv[2] + ".txt");
+	ofstream binaryFile((string)argv[2] + ".bin", ios::binary);
 
-	if (inputFile.is_open() && outputFile.is_open()) {
+	if (inputFile.is_open() && binaryFile.is_open()) {
 		string text = "";
 		string line;
+
+		int cnt = 0;
 		while (getline(inputFile, line)) {
+			if (cnt) text += "\n";
 			text += line;
-			text += "\n";
+			cnt++;
 		}
 
 		inputFile.close();
-		outputFile << buildTree(text);
-		outputFile.close();
+
+		string coded = buildTree(text);
+		for (size_t i = 0; i < coded.size(); i += 8) {
+			string byteStr = coded.substr(i, 8);
+			char byte = static_cast<char>(stoi(byteStr, nullptr, 2));
+			binaryFile.write(&byte, sizeof(char));
+		}
+
+		binaryFile.close();
 	}
 
 	else {
